@@ -26,7 +26,7 @@ questions = [
 
 answers = ['d', 'a', 'b', 'a', 'a', 'a', 'a', 'b', 'a', 'c', 'b', 'd', 'd', 'c', 'a', 'b', 'a']
 
-server = socket.socket(socket.SOCK_STREAM, socket.AF_INET)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 address = "127.0.0.1"
 port = 8000
@@ -35,6 +35,8 @@ server.bind((address, port))
 server.listen()
 
 clients = []
+nick_names = []
+
 
 def getrandomquestionanswer(connected):
     random_index = random.randint(0, len(questions), -1)
@@ -43,7 +45,8 @@ def getrandomquestionanswer(connected):
     connected.send(random_question.encode('utf-8'))
 
 def remove(conn):
-    pass
+     if conn in clients:
+        clients.remove(conn)
 
 def remove_question(index):
     questions.pop(index)
@@ -52,7 +55,7 @@ def remove_question(index):
 def clientthread(connected, address):
     score = 0
     connected.send('Welcome to this quiz game'.encode('utf-8'))
-    connected.send("You'll recieve a question. The answer should be a, b, c or d".encode('utf-8'))
+    connected.send("You'll recieve a question. The answer should be a, b, c or d \n".encode('utf-8'))
     connected.send('Good Luck!\n\n'.encode('utf-8'))
 
     index, question, answer = getrandomquestionanswer(connected)
@@ -76,9 +79,16 @@ def clientthread(connected, address):
 
 while True:
     connected, address = server.accept()
-    clients.append(connected)
+    connected.send('NICKNAME'.encode('utf-8'))
+    nickname = connected.recv(2048).decode('utf-8')
 
-    new_thread = Thread(target=clientthread, args=(connected , address))
+    clients.append(connected)
+    nick_names.append(nickname)
+    print(nickname + "connected")
+
+
+
+    new_thread = Thread(target=clientthread, args=(connected , nickname))
 
     new_thread.start()
 

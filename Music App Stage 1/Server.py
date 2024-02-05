@@ -66,7 +66,6 @@ def setup():
     acceptConnections()
 
 
-#------ Student Activity 1 Start---------------
 def ftp():
     global IP_ADDRESS
 
@@ -85,4 +84,3 @@ setup_thread.start()
 
 ftp_thread = Thread(target=ftp)               #receiving multiple messages
 ftp_thread.start()
-#------ Student Activity 1 End---------------
